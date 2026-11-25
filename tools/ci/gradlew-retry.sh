@@ -16,7 +16,10 @@ if [ "$status" -ne 0 ] && grep -qE \
     "$log"; then
   echo "::warning title=Gradle::Dependency download failed; retrying once with --refresh-dependencies"
   sleep 20
-  ./gradlew "$@" --refresh-dependencies
-  status=$?
+  # --info on the retry records each repository request and its HTTP result, so a persistent
+  # failure can be diagnosed from the log.
+  ./gradlew "$@" --refresh-dependencies --info 2>&1 | tee "$log" \
+    | grep -E "Resource missing|status code|Could not (GET|HEAD|resolve)|Downloading https|BUILD|FAILURE|What went wrong|was not found" || true
+  status=${PIPESTATUS[0]}
 fi
 exit "$status"
