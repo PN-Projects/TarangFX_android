@@ -99,9 +99,13 @@ fun SettingsScreen(onBack: () -> Unit, vm: SettingsViewModel = hiltViewModel()) 
             Column(Modifier.card()) {
                 Text("About", style = MaterialTheme.typography.titleSmall)
                 Text(
-                    "Version ${BuildConfig.VERSION_NAME}\nOpen-source components: FFmpeg (LGPL 2.1+), LAME (LGPL), libopus/libvorbis/libogg (BSD), " +
-                        "Rubber Band Library (GPL 2+), TagLib (LGPL 2.1 / MPL 1.1), Google Oboe (Apache 2.0), nlohmann/json (MIT), " +
-                        "Plus Jakarta Sans (OFL 1.1).",
+                    "Version ${BuildConfig.VERSION_NAME}\n" +
+                        "TarangFX is free software under the GNU AGPL v3.0 or later. Source code: " +
+                        "github.com/PN-Projects/TarangFX_android\n\n" +
+                        "Open-source components: FFmpeg (LGPL 2.1+), LAME (LGPL), libopus/libvorbis/libogg (BSD), " +
+                        "Rubber Band Library (GPL 2+), TagLib (LGPL 2.1 / MPL 1.1), Google Oboe (Apache 2.0), " +
+                        "ONNX Runtime (MIT), GTCRN (MIT), DeepFilterNet3 (MIT / Apache 2.0), nlohmann/json (MIT), " +
+                        "Plus Jakarta Sans (OFL 1.1).\n\nMade with ♥ at PN-projects by TeamPrabodhNandini",
                     style = MaterialTheme.typography.bodySmall,
                 )
             }
