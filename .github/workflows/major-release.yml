@@ -42,7 +42,7 @@ jobs:
           perm=$(gh api "repos/$REPO/collaborators/$ACTOR/permission" --jq .permission)
           case "$perm" in admin|maintain) echo "$ACTOR has $perm permission";; \
             *) echo "::error::Only maintainers (admin/maintain) may publish a major release; $ACTOR has '$perm'."; exit 1;; esac
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
           persist-credentials: false
