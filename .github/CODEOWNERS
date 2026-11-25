@@ -1,0 +1,12 @@
+# Every pull request needs an approving review from a code owner (enforced by the main ruleset).
+# Add moderators here (users or @PN-Projects/<team>) as the maintainer team grows.
+*                                   @satyanandatripathi
+
+# Release engineering and versioning are maintainer-only areas.
+/.github/                           @satyanandatripathi
+/version.properties                 @satyanandatripathi
+/tools/versioning/                  @satyanandatripathi
+/tools/release/                     @satyanandatripathi
+/app/build.gradle.kts               @satyanandatripathi
+/app/proguard-rules.pro             @satyanandatripathi
+/app/src/main/AndroidManifest.xml   @satyanandatripathi

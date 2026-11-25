@@ -1,0 +1,31 @@
+name: Feature request
+description: Suggest an idea for TarangFX
+title: "feat: "
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+  - type: checkboxes
+    id: principles
+    attributes:
+      label: Project principles
+      description: TarangFX stays 100% offline, free, ad-free and tracker-free.
+      options:
+        - label: This idea needs no internet access, accounts, ads, payments or telemetry.
+          required: true
+        - label: I searched existing issues and this is not a duplicate.
+          required: true

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TarangFX</string>
+    <string name="notif_channel_export">Exports &amp; processing</string>
+    <string name="notif_channel_export_desc">Progress of offline exports, conversions and AI denoising</string>
+    <string name="cancel">Cancel</string>
+</resources>

@@ -1,0 +1,166 @@
+# Pull-request checks. Every job here is a REQUIRED status check on `main` (see the ruleset
+# described in README.md), so nothing merges unless all of them pass.
+#
+# Security (GitHub "Security hardening for GitHub Actions"):
+#  * `pull_request` (not `pull_request_target`): code from forks runs without secrets and with a
+#    read-only token.
+#  * Token is read-only for the whole workflow.
+#  * Third-party actions are pinned to full commit SHAs (tag shown in the comment).
+#  * Untrusted input (the PR title) is passed through env, never interpolated into scripts.
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  NDK_VERSION: "27.1.12297006"
+  CMAKE_VERSION: "3.22.1"
+
+jobs:
+  pr-title:
+    name: PR title
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Conventional Commits title
+        if: github.event_name == 'pull_request'
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          re='^(feat|fix|perf|refactor|docs|test|build|ci|chore|revert|style|release)(\([a-z0-9._/-]+\))?!?: .{3,}$'
+          if [[ "$TITLE" =~ $re ]]; then
+            echo "Title OK: $TITLE"
+          else
+            echo "::error title=PR title::'$TITLE' must follow Conventional Commits, e.g. 'feat(trim): add fade presets' or 'fix: crash on empty file'."
+            exit 1
+          fi
+
+  version-guard:
+    name: Version guard
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0 # all history + release tags
+          persist-credentials: false
+      - name: Versioning policy self-test
+        run: python3 tools/versioning/version.py selftest
+      - name: Validate version.properties against released tags
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          if [ -n "$BASE_SHA" ]; then
+            git diff --name-only "$BASE_SHA" HEAD > "$RUNNER_TEMP/changed.txt"
+            python3 tools/versioning/version.py validate --changed-files "$RUNNER_TEMP/changed.txt"
+          else
+            python3 tools/versioning/version.py validate
+          fi
+
+  unit-tests:
+    name: Unit tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4.7.1
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: gradle/actions/setup-gradle@8379f6a1328ee0e06e2bb424dadb7b159856a326 # v4.4.0
+      - name: JVM unit tests
+        run: ./gradlew :app:testDebugUnitTest --stacktrace
+      - name: Upload test report
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: unit-test-report
+          path: app/build/reports/tests/
+          retention-days: 7
+
+  native-tests:
+    name: Native DSP tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Build and run C++ DSP tests (host)
+        run: |
+          cmake -S tests/native -B build/native -DCMAKE_BUILD_TYPE=Release
+          cmake --build build/native -j"$(nproc)"
+          ./build/native/dsp_tests
+
+  build:
+    name: Build (debug APK)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4.7.1
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: gradle/actions/setup-gradle@8379f6a1328ee0e06e2bb424dadb7b159856a326 # v4.4.0
+      - name: Install NDK + CMake
+        run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "ndk;$NDK_VERSION" "cmake;$CMAKE_VERSION" > /dev/null
+      - name: Assemble + APK hygiene (no network permission, no design references)
+        run: ./gradlew :app:assembleDebug :app:verifyApkHygieneDebug -Pabi=arm64-v8a --stacktrace
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: TarangFX-debug-pr${{ github.event.pull_request.number || 'manual' }}
+          path: app/build/outputs/apk/debug/*.apk
+          retention-days: 7
+
+  integration-tests:
+    name: Integration tests (emulator)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4.7.1
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: gradle/actions/setup-gradle@8379f6a1328ee0e06e2bb424dadb7b159856a326 # v4.4.0
+      - name: Install NDK + CMake
+        run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "ndk;$NDK_VERSION" "cmake;$CMAKE_VERSION" > /dev/null
+      - name: Enable KVM (hardware-accelerated emulator)
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Build app + test APKs (x86_64)
+        run: ./gradlew :app:assembleDebug :app:assembleDebugAndroidTest -Pabi=x86_64 --stacktrace
+      - name: Run instrumented tests on an emulator
+        uses: reactivecircus/android-emulator-runner@1dcd0090116d15e7c562f8db72807de5e036a4ed # v2.34.0
+        with:
+          api-level: 34
+          arch: x86_64
+          target: google_apis
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          script: ./gradlew :app:connectedDebugAndroidTest -Pabi=x86_64 --stacktrace
+      - name: Upload test report
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: integration-test-report
+          path: app/build/reports/androidTests/
+          retention-days: 7

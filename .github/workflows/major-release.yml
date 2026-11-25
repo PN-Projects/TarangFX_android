@@ -1,0 +1,73 @@
+# Manual MAJOR release (e.g. 1.37.4 -> 2.0.0).
+#
+# Process (see README "Versioning & releases"):
+#   1. A maintainer opens a PR titled "release: major X.0.0" that changes ONLY version.properties
+#      to major=X (X = latest released major + 1). The Version guard rejects anything else.
+#   2. After it is merged (automatic releases pause while a major bump is pending), a maintainer
+#      runs this workflow from main and types X.0.0 to confirm.
+#   3. The workflow re-validates the file against the released tags and publishes X.0.0.
+name: Major release
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_version:
+        description: "Type the version to publish (must be <major in version.properties>.0.0)"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    name: Validate major release
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      version: ${{ steps.major.outputs.version }}
+    steps:
+      - name: Only from main, only by maintainers
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          ACTOR: ${{ github.actor }}
+          REF: ${{ github.ref }}
+        run: |
+          [ "$REF" = "refs/heads/main" ] || { echo "::error::Run this workflow from main (got $REF)."; exit 1; }
+          perm=$(gh api "repos/$REPO/collaborators/$ACTOR/permission" --jq .permission)
+          case "$perm" in admin|maintain) echo "$ACTOR has $perm permission";; \
+            *) echo "::error::Only maintainers (admin/maintain) may publish a major release; $ACTOR has '$perm'."; exit 1;; esac
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Versioning policy
+        run: |
+          python3 tools/versioning/version.py selftest
+          python3 tools/versioning/version.py validate
+      - name: Major version from version.properties
+        id: major
+        run: python3 tools/versioning/version.py major
+      - name: Confirm
+        env:
+          WANT: ${{ inputs.confirm_version }}
+          GOT: ${{ steps.major.outputs.version }}
+        run: |
+          [ "$WANT" = "$GOT" ] || { echo "::error::You typed '$WANT' but version.properties resolves to '$GOT'."; exit 1; }
+          echo "### Publishing major release **v$GOT**" >> "$GITHUB_STEP_SUMMARY"
+
+  release:
+    name: Release
+    needs: plan
+    permissions:
+      contents: write
+    uses: ./.github/workflows/release-pipeline.yml
+    with:
+      version: ${{ needs.plan.outputs.version }}
+      major: true
+    secrets: inherit

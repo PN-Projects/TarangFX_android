@@ -1,0 +1,33 @@
+# --- Design references: NEVER shipped, NEVER committed (build-exclusion rule) ---
+ref_ui/
+
+# Gradle / Android build outputs
+.gradle/
+build/
+app/build/
+app/.cxx/
+.externalNativeBuild/
+captures/
+*.apk
+*.aab
+*.ap_
+*.dex
+dist/
+tests/native/build/
+
+# Local machine config (contains absolute SDK path)
+local.properties
+
+# Signing material must never be committed; supply via env vars / CI secret store
+*.jks
+*.keystore
+*.p12
+*.dpapi
+keystore.properties
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.DS_Store
+Thumbs.db
