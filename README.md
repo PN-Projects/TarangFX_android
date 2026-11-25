@@ -182,6 +182,8 @@ by hand**.
 | The merged PR has the label `semver:minor` | CI publishes the next **minor** instead (`1.4.6 → 1.5.0`) |
 | Patch reaches 99 | It rolls over (`1.4.99 → 1.5.0`); minor and patch are each limited to 0–99 |
 | Version reaches `x.99.99` | Automatic releases stop: a **major release** is required |
+| A **Dependabot** PR is merged | **No release.** Dependency and Actions updates ship with the next real release |
+| The merged PR has the label `skip-release` | **No release** (for changes that don't affect the app, e.g. README or CI tweaks) |
 | Major release | Manual and maintainer-only (see below) |
 
 The first release is **1.0.0**. Android's `versionCode` is `major×10000 + minor×100 + patch`, so it
@@ -263,6 +265,8 @@ For maintainers and moderators (people with *triage*, *write*, *maintain* or *ad
   should use this only when no other reviewer exists.
 - Add `semver:minor` before merging when a PR adds user-visible features. Leave it off for fixes
   and internal changes.
+- Add `skip-release` before merging when a PR doesn't change the app (README, CI, issue
+  templates). Dependabot PRs never release, so they need no label.
 - Never rewrite `main` history, delete or recreate release tags, or edit published releases'
   assets.
 
