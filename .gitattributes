@@ -1,0 +1,17 @@
+# Line endings: LF in the repository for everything (CI runs on Linux, shell scripts need LF),
+# CRLF only where Windows tools require it. Prevents whole-file diffs/conflicts between
+# Windows and Linux contributors.
+* text=auto eol=lf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Binaries: never touched by line-ending conversion or textual diff/merge.
+*.png binary
+*.jpg binary
+*.ttf binary
+*.onnx binary
+*.a binary
+*.so binary
+*.jar binary
+*.p12 binary
+*.jks binary
