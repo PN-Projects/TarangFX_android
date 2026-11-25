@@ -41,7 +41,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 75
     strategy:
-      fail-fast: true
+      fail-fast: false # one ABI's transient failure must not cancel the other
       matrix:
         abi: [arm64-v8a, x86_64]
     steps:
@@ -53,6 +53,11 @@ jobs:
           distribution: temurin
           java-version: "17"
       - uses: gradle/actions/setup-gradle@8379f6a1328ee0e06e2bb424dadb7b159856a326 # v4.4.0
+        with:
+          # Clean-room release builds: never restore or save the shared Gradle cache, so an official
+          # release cannot be affected by stale or poisoned cache state (cache poisoning is a known
+          # CI supply-chain risk).
+          cache-disabled: true
       - name: Install NDK + CMake
         run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "ndk;$NDK_VERSION" "cmake;$CMAKE_VERSION" > /dev/null
       - name: Decode signing key
@@ -73,7 +78,7 @@ jobs:
           TFX_RELEASE_KEY_PASSWORD: ${{ secrets.TFX_KEY_PASSWORD }}
           VERSION: ${{ inputs.version }}
           ABI: ${{ matrix.abi }}
-        run: ./gradlew :app:assembleRelease :app:verifyApkHygieneRelease "-Pabi=$ABI" "-PtfxVersionName=$VERSION" --stacktrace
+        run: bash tools/ci/gradlew-retry.sh :app:assembleRelease :app:verifyApkHygieneRelease "-Pabi=$ABI" "-PtfxVersionName=$VERSION" --stacktrace
       - name: Remove signing key
         if: always()
         run: rm -f "$RUNNER_TEMP/release.p12"
