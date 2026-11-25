@@ -25,11 +25,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowForwardIos
-import androidx.compose.material.icons.rounded.CallMerge
+import androidx.compose.material.icons.automirrored.rounded.CallMerge
 import androidx.compose.material.icons.rounded.ContentCut
 import androidx.compose.material.icons.rounded.Equalizer
 import androidx.compose.material.icons.rounded.GraphicEq
-import androidx.compose.material.icons.rounded.HelpOutline
+import androidx.compose.material.icons.automirrored.rounded.HelpOutline
 import androidx.compose.material.icons.rounded.LibraryMusic
 import androidx.compose.material.icons.rounded.Mic
 import androidx.compose.material.icons.rounded.NotificationsActive
@@ -72,7 +72,7 @@ import kotlin.math.sin
 private data class GridTool(val tool: Tool, val label: String, val icon: ImageVector, val colors: List<Color>, val ai: Boolean = false)
 
 private val GRID = listOf(
-    GridTool(Tool.MERGE, "Merge", Icons.Rounded.CallMerge, AppColors.ToolMerge),
+    GridTool(Tool.MERGE, "Merge", Icons.AutoMirrored.Rounded.CallMerge, AppColors.ToolMerge),
     GridTool(Tool.MIX, "Mix", Icons.Rounded.LibraryMusic, AppColors.ToolMix),
     GridTool(Tool.RINGTONE, "Ringtone", Icons.Rounded.NotificationsActive, AppColors.ToolRingtone),
     GridTool(Tool.SPLIT, "Split", Icons.Rounded.VerticalSplit, AppColors.ToolSplit),
@@ -93,7 +93,7 @@ fun HomeScreen(onTool: (Tool) -> Unit, onSettings: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text("TarangFX", style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.ExtraBold), modifier = Modifier.weight(1f))
-            IconButton(onClick = { help = true }) { Icon(Icons.Rounded.HelpOutline, "Help", tint = AppColors.TextPrimary) }
+            IconButton(onClick = { help = true }) { Icon(Icons.AutoMirrored.Rounded.HelpOutline, "Help", tint = AppColors.TextPrimary) }
             IconButton(onClick = onSettings) { Icon(Icons.Rounded.Settings, "Settings", tint = AppColors.TextPrimary) }
         }
         LazyVerticalGrid(

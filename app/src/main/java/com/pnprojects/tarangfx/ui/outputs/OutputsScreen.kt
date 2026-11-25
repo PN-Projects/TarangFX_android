@@ -31,7 +31,7 @@ import androidx.compose.material.icons.rounded.CheckBox
 import androidx.compose.material.icons.rounded.CheckBoxOutlineBlank
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.DeleteOutline
-import androidx.compose.material.icons.rounded.HelpOutline
+import androidx.compose.material.icons.automirrored.rounded.HelpOutline
 import androidx.compose.material.icons.rounded.LibraryAddCheck
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.Pause
@@ -68,7 +68,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pnprojects.tarangfx.data.db.OutputAudioEntity
 import com.pnprojects.tarangfx.data.media.RingtoneTarget
@@ -127,7 +127,7 @@ fun OutputsScreen(onOpenInEditor: () -> Unit, onEditTags: () -> Unit, onSettings
     Column(Modifier.fillMaxSize().background(AppColors.Canvas)) {
         Row(Modifier.fillMaxWidth().statusBarsPadding().height(64.dp).padding(start = 20.dp, end = 8.dp), verticalAlignment = Alignment.CenterVertically) {
             Text("Outputs", style = MaterialTheme.typography.headlineSmall, modifier = Modifier.weight(1f))
-            IconButton(onClick = { help = true }) { Icon(Icons.Rounded.HelpOutline, "Help", tint = AppColors.TextPrimary) }
+            IconButton(onClick = { help = true }) { Icon(Icons.AutoMirrored.Rounded.HelpOutline, "Help", tint = AppColors.TextPrimary) }
             IconButton(onClick = onSettings) { Icon(Icons.Rounded.Settings, "Settings", tint = AppColors.TextPrimary) }
         }
         Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 4.dp),
