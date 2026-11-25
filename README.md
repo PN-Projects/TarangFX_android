@@ -9,7 +9,7 @@ Trim · Merge · Multitrack mix · Split · Record · Convert · Video → audio
 [![CI](https://github.com/PN-Projects/TarangFX_android/actions/workflows/ci.yml/badge.svg)](https://github.com/PN-Projects/TarangFX_android/actions/workflows/ci.yml)
 [![Release](https://github.com/PN-Projects/TarangFX_android/actions/workflows/release.yml/badge.svg)](https://github.com/PN-Projects/TarangFX_android/actions/workflows/release.yml)
 [![Latest release](https://img.shields.io/github/v/release/PN-Projects/TarangFX_android?label=latest&color=e91e5a)](https://github.com/PN-Projects/TarangFX_android/releases/latest)
-[![License: GPL-3.0-or-later](https://img.shields.io/badge/license-GPL--3.0--or--later-blue)](LICENSE)
+[![License: AGPL-3.0-or-later](https://img.shields.io/badge/license-AGPL--3.0--or--later-blue)](LICENSE)
 ![Android 8.0+](https://img.shields.io/badge/Android-8.0%2B-3ddc84)
 ![No internet permission](https://img.shields.io/badge/internet%20permission-none-success)
 
@@ -241,7 +241,7 @@ existing `tfx` namespace conventions. The real-time audio path must stay allocat
 lock-free.
 
 **Licensing of contributions:** by submitting a pull request you agree that your contribution is
-licensed under the project's license (GPL-3.0-or-later), and you confirm you have the right to
+licensed under the project's license (AGPL-3.0-or-later), and you confirm you have the right to
 submit it.
 
 ## Moderation guide
@@ -358,9 +358,15 @@ fork's authors. It is not the upstream project's official weights.
 
 ## License
 
-TarangFX is licensed under the **GNU General Public License v3.0 or later**. See [LICENSE](LICENSE).
-Rubber Band Library is GPL-2.0-or-later, which is why the app as a whole is distributed under
-the GPL; the complete source is this repository.
+TarangFX is licensed under the **GNU Affero General Public License v3.0 or later**
+(AGPL-3.0-or-later). See [LICENSE](LICENSE). The complete source of every release is this
+repository.
+
+Bundled components keep their own licenses (see [Third-party components](#third-party-components)).
+Rubber Band Library is GPL-2.0-or-later, which may be used under GPL-3.0; section 13 of the GPLv3
+and of the AGPLv3 explicitly allows combining GPLv3 and AGPLv3 code. The project's build and CI
+tooling is open source too: for example, setup-gradle stays on the MIT-licensed v5, because v6+
+bundles a proprietary caching component.
 
 <div align="center">
 

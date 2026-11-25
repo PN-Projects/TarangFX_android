@@ -23,3 +23,8 @@ updates:
     commit-message:
       prefix: ci
       include: scope
+    ignore:
+      # gradle/actions v6+ moved caching into a proprietary component with separate Terms of Use.
+      # TarangFX's toolchain stays fully open source (AGPL project), so we stay on MIT-licensed v5.
+      - dependency-name: "gradle/actions*"
+        versions: [">= 6.0.0"]
