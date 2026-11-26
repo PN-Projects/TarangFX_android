@@ -94,8 +94,8 @@ These are non-negotiable and are enforced in review and in CI:
 
 | Tool | Version |
 |---|---|
-| JDK | 17 |
-| Android SDK | platform 35, build-tools 35 |
+| JDK | 17 (Gradle 9.9 runs on 17+) |
+| Android SDK | platform 37.1 (downloaded automatically by the build), build-tools 37 |
 | NDK | 27.1.12297006 (r27b) |
 | CMake | 3.22.1 (SDK package) |
 

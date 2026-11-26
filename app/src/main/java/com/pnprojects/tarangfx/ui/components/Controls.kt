@@ -19,7 +19,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.HelpOutline
+import androidx.compose.material.icons.automirrored.rounded.HelpOutline
 import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material3.AlertDialog
@@ -73,7 +73,7 @@ fun ScreenTopBar(
         )
         if (helpText != null) {
             IconButton(onClick = { showHelp = true }) {
-                Icon(Icons.Rounded.HelpOutline, contentDescription = "Help", tint = AppColors.TextPrimary)
+                Icon(Icons.AutoMirrored.Rounded.HelpOutline, contentDescription = "Help", tint = AppColors.TextPrimary)
             }
         }
         actions()

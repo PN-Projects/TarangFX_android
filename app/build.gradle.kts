@@ -1,9 +1,9 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.util.Properties
 import java.util.zip.ZipFile
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
@@ -11,7 +11,7 @@ plugins {
 }
 
 /** Resolves the onnxruntime-android AAR so its C/C++ headers can be extracted for CMake. */
-val ortAar: Configuration by configurations.creating
+val ortAar: Configuration = configurations.create("ortAar")
 
 // ---------------------------------------------------------------------------------------------
 // Versioning. Inputs: version.properties (major line, required) and -PtfxVersionName=X.Y.Z,
@@ -37,7 +37,12 @@ val tfxVersionCode: Int = run {
 
 android {
     namespace = "com.pnprojects.tarangfx"
-    compileSdk = 35
+    // Compose 1.13 requires the Android 17 QPR1 SDK (API 37, minor level 1).
+    compileSdk {
+        version = release(37) {
+            minorApiLevel = 1
+        }
+    }
     ndkVersion = "27.1.12297006"
 
     defaultConfig {
@@ -109,9 +114,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = "17"
-    }
     buildFeatures {
         compose = true
         prefab = true
@@ -132,8 +134,15 @@ android {
         // .onnx models must be stored uncompressed so they can be copied/mapped efficiently.
         noCompress += listOf("onnx")
     }
-    // Design references live in /ref_ui at the repo root and are never part of any source set.
-    sourceSets["main"].assets.srcDirs("src/main/assets")
+    // Design references live in /ref_ui at the repo root and are never part of any source set
+    // (assets come only from the default src/main/assets).
+}
+
+// AGP 9 compiles Kotlin itself (built-in Kotlin); only the compiler options are configured here.
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
+    }
 }
 
 dependencies {
@@ -186,7 +195,7 @@ dependencies {
 // ONNX Runtime C++ headers + .so are taken from the same AAR that is packaged into the APK, so
 // the native code links against exactly the runtime version that ships.
 // ---------------------------------------------------------------------------------------------
-val extractOrt by tasks.registering(Sync::class) {
+val extractOrt = tasks.register<Sync>("extractOrt") {
     from({ zipTree(ortAar.singleFile) }) { include("headers/**", "jni/**") }
     into(layout.buildDirectory.dir("ort"))
 }

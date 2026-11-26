@@ -51,7 +51,7 @@ import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pnprojects.tarangfx.domain.model.ExportConfig
 import com.pnprojects.tarangfx.domain.model.Waveform

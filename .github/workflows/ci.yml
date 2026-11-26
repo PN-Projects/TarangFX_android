@@ -83,7 +83,7 @@ jobs:
         run: bash tools/ci/gradlew-retry.sh :app:testDebugUnitTest --stacktrace
       - name: Upload test report
         if: failure()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: unit-test-report
           path: app/build/reports/tests/
@@ -120,7 +120,7 @@ jobs:
         run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "ndk;$NDK_VERSION" "cmake;$CMAKE_VERSION" > /dev/null
       - name: Assemble + APK hygiene (no network permission, no design references)
         run: bash tools/ci/gradlew-retry.sh :app:assembleDebug :app:verifyApkHygieneDebug -Pabi=arm64-v8a --stacktrace
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: TarangFX-debug-pr${{ github.event.pull_request.number || 'manual' }}
           path: app/build/outputs/apk/debug/*.apk
@@ -159,7 +159,7 @@ jobs:
           script: ./gradlew :app:connectedDebugAndroidTest -Pabi=x86_64 --stacktrace
       - name: Upload test report
         if: failure()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: integration-test-report
           path: app/build/reports/androidTests/
