@@ -68,8 +68,16 @@ fun FxEqStudioScreen(onBack: () -> Unit, onOpenOutputs: () -> Unit, vm: FxEqStud
             Text(ui.file?.title ?: "", style = MaterialTheme.typography.titleSmall, maxLines = 1)
             Spacer(Modifier.height(8.dp))
             PlayerWaveform(ui.waveform, dur, pos, vm::seekTo, height = 110.dp)
-            Row(Modifier.fillMaxWidth().padding(vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-                Text("${Fmt.time(pos)} / ${Fmt.time(dur)}", style = MaterialTheme.typography.bodyMedium.merge(TabularNums), maxLines = 1, softWrap = false, modifier = Modifier.weight(1f))
+            // Time readout gets its own line: beside the play and A/B controls it was clipped on phones
+            // (and could never fit hour-long files such as "1:02:03 / 1:10:00").
+            Text(
+                "${Fmt.time(pos)} / ${Fmt.time(dur)}",
+                style = MaterialTheme.typography.bodyMedium.merge(TabularNums),
+                color = AppColors.TextSecondary,
+                maxLines = 1,
+                modifier = Modifier.fillMaxWidth().padding(top = 10.dp),
+            )
+            Row(Modifier.fillMaxWidth().padding(vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
                 PlayButton(playing, size = 52.dp, onClick = vm::togglePlay)
                 Spacer(Modifier.weight(1f))
                 AbButton(ui.bypass, vm::setBypass)
